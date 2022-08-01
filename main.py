@@ -20,8 +20,12 @@ from util import wechat_push
 
 login_uin = ""
 
-logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-                    level=logging.INFO)
+if os.environ.get("DEBUG"):
+    logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                        level=logging.DEBUG)
+else:
+    logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
+                        level=logging.INFO)
 
 # 储存位置
 os.chdir("/download")

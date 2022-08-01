@@ -210,7 +210,7 @@ def password_login(username, password):
                 driver.switch_to.frame('login_frame')
             except:
                 # 这里一直出错, 打印出 base64 用于排查
-                logging.error(driver.get_screenshot_as_base64())
+                logging.debug(driver.get_screenshot_as_base64())
 
             driver.find_element(By.ID, 'switcher_plogin').click()
             driver.find_element(By.ID, 'u').clear()
