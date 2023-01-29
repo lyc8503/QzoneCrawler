@@ -13,6 +13,7 @@ from tenacity import wait_fixed, stop_after_attempt, retry
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
 def wechat_push(msg):
+    logging.info("推送: " + msg)
     logging.debug(requests.post("https://server.lyc8503.site/wepush", json={
         "key": "wepushkey",
         "msg": "[Qzone Get]" + msg
@@ -40,7 +41,7 @@ def get_latest_sms_code():
         except Exception as e:
             print("Error while fetching sms code: " + str(e))
 
-        time.sleep(1)
+        time.sleep(1.5)
     else:
         raise Exception("获取短信验证码失败")
 

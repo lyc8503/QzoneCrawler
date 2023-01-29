@@ -37,6 +37,7 @@ def get_chrome_options():
 
 
 def password_login(username, password):
+    print("尝试账号密码登录...")
     with webdriver.Chrome(options=get_chrome_options()) as driver:
         # 登录
         login_timeout = 60
@@ -67,15 +68,20 @@ def password_login(username, password):
             if "user.qzone.qq.com" in driver.current_url:
                 break
         else:
+            wechat_push("登录失败! 凭据错误/触发风控, 尝试验证手机短信")
             wechat_push_img(driver.get_screenshot_as_base64())
-            raise Exception("登录失败! 凭据错误/触发风控, 尝试验证手机短信")
 
-        wechat_push("尝试发送手机验证码登录...")
-        driver.find_element(By.CLASS_NAME, 'input-area__sms-btn').click()
-        time.sleep(1)
-        driver.find_element(By.XPATH, '//input[@maxlength="6"]').send_keys(get_latest_sms_code())
-        time.sleep(1)
-        driver.find_element(By.CLASS_NAME, 'qui-button__inner').click()
+        try:
+            wechat_push("尝试发送手机验证码登录...")
+            driver.switch_to.frame('verify')
+            driver.find_element(By.CLASS_NAME, 'input-area__sms-btn').click()
+            time.sleep(1)
+            driver.find_element(By.XPATH, '//input[@maxlength="6"]').send_keys(get_latest_sms_code())
+            time.sleep(1)
+            driver.find_element(By.CLASS_NAME, 'qui-button__inner').click()
+        except Exception as e:
+            wechat_push("尝试手机验证码登录失败: " + str(e))
+            wechat_push_img(driver.get_screenshot_as_base64())
 
         for i2 in range(0, 10):
             time.sleep(1)
