@@ -96,7 +96,7 @@ def try_login_and_get():
                             if 'created_time' not in old_json or old_json['created_time'] > check_time:
 
                                 ret = get_detail(friend_uin, i, cookie)
-                                time.sleep(random.random() * 2)
+                                time.sleep(random.random() * 5 + 2)
                                 
                                 ratio = difflib.SequenceMatcher(None, json.dumps(old_json), json.dumps(ret)).quick_ratio()
                                 

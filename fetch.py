@@ -28,29 +28,27 @@ def get_uin_info(uin, cookie):
 # 获取当前账号好友列表
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def get_friends(uin, cookie):
-    black_list = [66600000]
+    black_list = [66600000, 88882222, 1005200001, 622008102, 1006666003, 732952649]
 
-    r = requests.get("https://user.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_ship_manager.cgi",
+    r = requests.get("https://h5.qzone.qq.com/proxy/domain/r.qzone.qq.com/cgi-bin/tfriend/friend_show_qqfriends.cgi?follow_flag=1&groupface_flag=0&fupdate=1",
                      params={
                          'uin': uin,
-                         'do': 1,
                          'g_tk': get_gtk(cookie)
                      }, headers={
             "Cookie": cookie,
             "User-Agent": UA
         }, timeout=5)
 
-    friends = to_json(r.text)['data']['items_list']
+    friends = to_json(r.text)['data']['items']
 
     temp = {}
     for i2 in friends:
         if i2['uin'] not in black_list:
-            temp[i2['uin']] = i2['name']
+            temp[i2['uin']] = i2['remark']
     return temp
 
 
 # 获取说说(一页)
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
 def get_shuoshuo(uin, page, cookie):
     num = 40
     r = requests.get("https://user.qzone.qq.com/proxy/domain/taotao.qq.com/cgi-bin/emotion_cgi_msglist_v6", params={
@@ -68,16 +66,15 @@ def get_shuoshuo(uin, page, cookie):
     tmp = to_json(r.text)
     if tmp['result']['msg'] == '对不起，系统繁忙，请稍后重试':
         logging.warning("系统繁忙!")
-        # time.sleep(5 * 60)
         raise ConnectionError("返回系统繁忙.")
 
-    time.sleep(random.random())
+    time.sleep(random.random() * 5 + 2)
 
     return tmp
 
 
 # 获取所有说说
-@retry(stop=stop_after_attempt(3), wait=wait_fixed(2), reraise=True)
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(30), reraise=True)
 def get_shuoshuo_all(uin, cookie):
     ss_list = {}
 
